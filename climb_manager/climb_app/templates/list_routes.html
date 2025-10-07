@@ -1,0 +1,78 @@
+<head><link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script></head>
+<body>
+<h1>Routes</h1>
+<table id="routes-table">
+        <thead>
+            <th>Name</th>
+            <th>Grade</th>
+            <th>Area</th>
+            <th>Nearest Access</th>
+            <th>Type</th>
+            <th>Prio</th>
+            <th>Done</th>
+            <th>Info</th>
+            <th>Length (m)</th>
+        </thead>
+
+    {%for route in routes%}
+
+    <tr>
+    <td>
+        <a href="{% url 'single_route' route.id %}">{{ route.name }}</a>
+    </td>        
+    <td>{{route.grade}}</td>
+    <td>
+        <a href="{%url 'single_area' route.nearest_reference.area.id%}">
+            {{route.nearest_reference.area}}</a>
+    </td>
+    <td>
+    {% if route.nearest_reference %}
+        <a href="{%url 'single_reference' route.nearest_reference.id%}">          
+              {{ route.nearest_reference.name }}</a>
+    {% else %}
+        No reference
+    {% endif %}
+    </td>
+    <td>
+        {{toute.type}}
+    </td>
+    <td>
+        {{route.prio}}
+    </td>
+    <td>
+        {{route.done}}
+    </td>
+
+    <td>
+        {{route.more_info_at}}
+    </td>
+    <td>
+        {{route.length}}
+    </td>
+
+
+    </tr>
+    {%endfor%}
+
+
+</table>
+
+<script>
+$(document).ready(function() {
+    $('#routes-table').DataTable({
+        "paging": true,         // Enable pagination
+        "searching": true,      // Enable search box
+        "ordering": true,       // Enable column sorting
+        "order": [[1, "asc"]],  // Default sort by 2nd column (Grade)
+        "lengthMenu": [5, 10, 25, 50], // Page size options
+        "columnDefs": [
+            { "orderable": false, "targets": [7,8] } // Disable sorting for Info and Length columns
+        ]
+    });
+});
+</script>
+
+    
+</body>

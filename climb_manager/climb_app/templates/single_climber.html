@@ -1,0 +1,39 @@
+
+{% if climber %}
+<h1> {{climber.name}}  </h1>
+
+<table>
+    <tr>
+    <thead>
+        <th>Route</th>
+        <th>Date</th>
+                <th>With</th>
+
+    </thead>
+        </tr>
+
+    {% for climb in climber.climbs.all %}
+        <tr>
+            <th>
+                {{climb.route}}
+            </th>
+            <th>
+                {{climb.date}}
+            </th>
+            <th>
+                {% for mate in climb.climbers.all %}
+                        {% if mate.name != climber.name %}
+
+                    {{ mate.name }}{% if not forloop.last %} {% endif %}
+                            {% endif %}
+
+                        {% endfor %}            
+                    </th>
+        </tr>
+    {%endfor%}
+
+</table>
+
+{%else%}
+<h1>climber not found</h1>
+{%endif%}

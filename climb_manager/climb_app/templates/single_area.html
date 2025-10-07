@@ -1,0 +1,14 @@
+{% if area %}
+
+<h1>
+    {{area.name}}
+</h1>
+<h1>
+    {{area.country}}
+</h1>
+
+{% for ref in area.nearestreference_set.all %}
+    <li>{{ref.name}}</li>
+{% endfor %}
+
+{%endif%}

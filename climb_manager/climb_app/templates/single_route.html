@@ -1,0 +1,46 @@
+
+{% if route %}
+<h1> {{route.name}}  </h1>
+<h2>
+    Done:
+    {{route.done}}
+</h2>
+<h2>
+    Grade:
+    {{route.grade}}
+</h2>
+
+<h2>
+    {{route.nearest_reference}}
+</h2>
+
+<h2>
+    Type:
+    {{route.type}}
+</h2>
+<h2>
+    Length:
+    {{route.length}}
+</h2>
+<h2>
+    Prio:
+    {{route.prio}}
+</h2>
+<h2>
+    Info at:
+    {{route.more_info_at}}
+</h2>
+<h2>
+    Climbed :
+</h2>
+{%for climb in route.climb_set.all%}
+<li>    {{ climb.date }} --
+    {% for climber in climb.climbers.all %}
+        {{ climber.name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %} -- Comments:
+    {{climb.comment}}
+</li>
+{%endfor%}
+{%else%}
+<h1>Route not found</h1>
+{%endif%}

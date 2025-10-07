@@ -1,0 +1,14 @@
+{% if reference %}
+
+<h1>
+    {{reference.name}}
+</h1>
+<h1>
+    {{reference.area}}
+</h1>
+
+{% for route in reference.route_set.all %}
+    <li>{{route.name}}</li>
+{% endfor %}
+
+{%endif%}

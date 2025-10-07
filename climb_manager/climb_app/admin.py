@@ -11,19 +11,14 @@ from .models import (
 from django.contrib import admin
 from import_export import resources
 
-# admin.py
-from import_export.admin import ImportExportModelAdmin
 
 class RouteResource(resources.ModelResource):
     class Meta:
         model = Route
 
-   
 
-class RouteAdmin(ImportExportModelAdmin):
-    resource_class = RouteResource
 
-admin.site.register(Route, RouteAdmin)
+admin.site.register(Route)
 
 
 class ClimbInline(admin.TabularInline):
@@ -38,5 +33,4 @@ class ClimberAdmin(admin.ModelAdmin):
 admin.site.register(Area)
 admin.site.register(Climb)
 admin.site.register(NearestReference)
-
 admin.site.register(Climber, ClimberAdmin)

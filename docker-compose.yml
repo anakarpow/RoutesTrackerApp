@@ -1,0 +1,42 @@
+services:
+  backend:
+    build:
+      context: ./climb_manager
+      dockerfile: Dockerfile
+    container_name: climb_backend
+    volumes:
+      - ./climb_manager:/app
+      - static_volume:/app/staticfiles
+    environment:
+      - DEBUG=1
+      - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,backend
+      - DATABASE_URL=sqlite:///db.sqlite3
+    ports:
+      - "8000:8000"
+    networks:
+      - climb_network
+    command: >
+      sh -c "python manage.py migrate &&
+             python manage.py collectstatic --noinput &&
+             python manage.py runserver 0.0.0.0:8000"
+
+  frontend:
+    build:
+      context: ./climb_frontend
+      dockerfile: Dockerfile
+    container_name: climb_frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - climb_network
+    environment:
+      - REACT_APP_API_BASE=http://localhost:3000/api
+
+volumes:
+  static_volume:
+
+networks:
+  climb_network:
+    driver: bridge

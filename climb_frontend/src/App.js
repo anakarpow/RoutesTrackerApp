@@ -5,12 +5,10 @@ import AreaDetail from "./pages/AreaDetail";
 import NearestRefDetail from "./pages/NearestRefDetail";
 import RouteDetail from "./pages/RouteDetail";
 import RoutesPage from "./pages/RoutesPage";
-// ...existing code...
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import LightModeIcon from "@mui/icons-material/LightMode";
 import { createTheme, IconButton, ThemeProvider } from "@mui/material";
 import { useMemo, useState } from "react";
-// ...existing code...
 
 function App() {
   const [dark, setDark] = useState(true);
@@ -53,4 +51,3 @@ function App() {
 }
 
 export default App;
-// ...existing code...

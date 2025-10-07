@@ -1,4 +1,4 @@
-clean up especially api code
+clean up especially api code DONE
 
 check and simplify react code if possible
 

@@ -79,10 +79,10 @@ class Command(BaseCommand):
                 route.length = length or None
                 route.done = parse_done(done)
                 route.save()
-            if comments:
-                route.comments = comments
-                route.save()
-            if notes:
-                route.note = notes
+
+            # Handle comments/notes - use the correct field name 'comment'
+            comment_value = comments or notes
+            if comment_value:
+                route.comment = comment_value
                 route.save()
             count += 1

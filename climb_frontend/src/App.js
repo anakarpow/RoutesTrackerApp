@@ -1,6 +1,8 @@
 import { CssBaseline } from "@mui/material";
 import { Link, Route, Routes } from "react-router-dom";
 import "./App.css";
+import AreaDetail from "./pages/AreaDetail";
+import NearestRefDetail from "./pages/NearestRefDetail";
 import RouteDetail from "./pages/RouteDetail";
 import RoutesPage from "./pages/RoutesPage";
 // ...existing code...
@@ -42,6 +44,8 @@ function App() {
         <Routes>
           <Route path="/" element={<RoutesPage />} />
           <Route path="/routes/:id" element={<RouteDetail />} />
+          <Route path="/areas/:id" element={<AreaDetail />} />
+          <Route path="/nearest-refs/:id" element={<NearestRefDetail />} />
         </Routes>
       </div>
     </ThemeProvider>

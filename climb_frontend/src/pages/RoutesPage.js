@@ -64,10 +64,12 @@ export default function RoutesPage() {
             grade: r.grade,
             prio: r.prio ?? r.priority ?? null,
             nearest: r.nearest_reference ? r.nearest_reference.name : "—",
+            nearestId: r.nearest_reference ? r.nearest_reference.id : null,
             area: r.nearest_reference && r.nearest_reference.area && r.nearest_reference.area.name ? r.nearest_reference.area.name : "—",
-            moreInfosAt: r.more_infos_at || r.url || null,
+            areaId: r.nearest_reference && r.nearest_reference.area ? r.nearest_reference.area.id : null,
+            moreInfosAt: r.more_info_at || null,
             length: r.length ?? r.route_length ?? null,
-            comments: r.comments || r.note || "",
+            comments: r.comment || "",
             done: r.done === true || r.completed === true
           }))
         )
@@ -149,9 +151,49 @@ export default function RoutesPage() {
         )
       },
       // 5 nearest reference
-      { field: "nearest", headerName: "Nearest Ref", flex: 1, minWidth: 150 },
+      { 
+        field: "nearest", 
+        headerName: "Nearest Ref", 
+        flex: 1, 
+        minWidth: 150,
+        renderCell: params => (
+          params.row.nearestId ? (
+            <Link 
+              to={`/nearest-refs/${params.row.nearestId}`} 
+              style={{ 
+                textDecoration: "none", 
+                color: "#1976d2"
+              }}
+            >
+              {params.value}
+            </Link>
+          ) : (
+            params.value
+          )
+        )
+      },
       // 6 area
-      { field: "area", headerName: "Area", flex: 1, minWidth: 140 },
+      { 
+        field: "area", 
+        headerName: "Area", 
+        flex: 1, 
+        minWidth: 140,
+        renderCell: params => (
+          params.row.areaId ? (
+            <Link 
+              to={`/areas/${params.row.areaId}`} 
+              style={{ 
+                textDecoration: "none", 
+                color: "#1976d2"
+              }}
+            >
+              {params.value}
+            </Link>
+          ) : (
+            params.value
+          )
+        )
+      },
       // 7 more infos at
       {
         field: "moreInfosAt",

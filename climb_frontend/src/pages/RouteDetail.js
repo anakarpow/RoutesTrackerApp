@@ -8,17 +8,33 @@ import TerrainIcon from "@mui/icons-material/Terrain";
 import { Box, Card, CardContent, Chip, Divider, Stack, Tooltip, Typography } from "@mui/material";
 import { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { fetchRoute } from "../api";
+import { fetchRoute, fetchRoutes } from "../api";
 
 export default function RouteDetail() {
   const { id } = useParams();
   const [route, setRoute] = useState(null);
+  const [nearbyRoutes, setNearbyRoutes] = useState([]);
   const [err, setErr] = useState(null);
 
   useEffect(() => {
-    fetchRoute(id)
-      .then(setRoute)
-      .catch(e => setErr(e.message));
+    Promise.all([
+      fetchRoute(id),
+      fetchRoutes()
+    ])
+    .then(([routeData, allRoutes]) => {
+      setRoute(routeData);
+      
+      // Filter routes that have the same nearest reference but exclude current route
+      if (routeData.nearest_reference && Array.isArray(allRoutes)) {
+        const nearby = allRoutes.filter(r => 
+          r.nearest_reference && 
+          r.nearest_reference.id === routeData.nearest_reference.id &&
+          r.id !== parseInt(id)
+        );
+        setNearbyRoutes(nearby);
+      }
+    })
+    .catch(e => setErr(e.message));
   }, [id]);
 
   const typeIconMap = {
@@ -56,10 +72,10 @@ export default function RouteDetail() {
   const area = route.nearest_reference && route.nearest_reference.area && route.nearest_reference.area.name ? route.nearest_reference.area.name : "—";
   const prio = route.prio ?? route.priority ?? null;
   const done = route.done === true || route.completed === true;
-  const comments = route.comments || route.note || "";
+  const comments = route.comment || "";
 
   return (
-    <Box sx={{ maxWidth: 520, mx: "auto", mt: 4 }}>
+    <Box sx={{ maxWidth: 720, mx: "auto", mt: 4 }}>
       <Card elevation={3}>
         <CardContent>
           <Stack direction="row" alignItems="center" spacing={2} mb={1}>
@@ -75,16 +91,58 @@ export default function RouteDetail() {
             <Chip label={route.type || "—"} icon={typeIconMap[route.type]} size="small" />
             <Chip label={route.grade || "—"} color={gradeColor(route.grade)} size="small" variant="outlined" />
             <Chip label={prio != null ? `Prio ${prio}` : "No prio"} color={prioColor(prio)} size="small" />
-            <Chip label={area} size="small" />
+            {route.nearest_reference?.area ? (
+              <Chip 
+                label={area} 
+                size="small" 
+                component={Link}
+                to={`/areas/${route.nearest_reference.area.id}`}
+                clickable
+                sx={{ 
+                  textDecoration: "none",
+                  "&:hover": {
+                    backgroundColor: "action.hover"
+                  }
+                }}
+              />
+            ) : (
+              <Chip label={area} size="small" />
+            )}
           </Stack>
           <Typography variant="body2" color="text.secondary" mb={1}>
             <b>Length:</b> {route.length || "—"} m
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={1}>
-            <b>Nearest Reference:</b> {route.nearest_reference ? route.nearest_reference.name : "—"}
+            <b>Nearest Reference:</b>{" "}
+            {route.nearest_reference ? (
+              <Link 
+                to={`/nearest-refs/${route.nearest_reference.id}`}
+                style={{ 
+                  textDecoration: "none", 
+                  color: "#1976d2"
+                }}
+              >
+                {route.nearest_reference.name}
+              </Link>
+            ) : (
+              "—"
+            )}
           </Typography>
           <Typography variant="body2" color="text.secondary" mb={2}>
-            <b>Area:</b> {area}
+            <b>Area:</b>{" "}
+            {route.nearest_reference?.area ? (
+              <Link 
+                to={`/areas/${route.nearest_reference.area.id}`}
+                style={{ 
+                  textDecoration: "none", 
+                  color: "#1976d2"
+                }}
+              >
+                {area}
+              </Link>
+            ) : (
+              area
+            )}
           </Typography>
           {comments && (
             <Box mb={2}>
@@ -118,6 +176,66 @@ export default function RouteDetail() {
                   </Card>
                 ))}
               </Stack>
+            </Box>
+          )}
+
+          {nearbyRoutes.length > 0 && (
+            <Box mb={2}>
+              <Typography variant="subtitle2" color="text.secondary" mb={1}>
+                Other routes near {route.nearest_reference?.name}
+              </Typography>
+              <Stack spacing={1}>
+                {nearbyRoutes.map((nearbyRoute) => (
+                  <Card key={nearbyRoute.id} variant="outlined" sx={{ p: 1, bgcolor: (theme) => theme.palette.mode === 'dark' ? 'grey.900' : 'grey.50' }}>
+                    <Stack direction="row" spacing={2} alignItems="center">
+                      <Box flex={1}>
+                        <Link 
+                          to={`/routes/${nearbyRoute.id}`} 
+                          style={{ 
+                            textDecoration: "none", 
+                            fontWeight: 500,
+                            color: "#1976d2"
+                          }}
+                        >
+                          {nearbyRoute.name}
+                        </Link>
+                        <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
+                          {nearbyRoute.type && `${nearbyRoute.type} • `}
+                          {nearbyRoute.grade && `Grade ${nearbyRoute.grade} • `}
+                          {nearbyRoute.length && `${nearbyRoute.length}m`}
+                        </Typography>
+                      </Box>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        {nearbyRoute.grade && (
+                          <Chip
+                            label={nearbyRoute.grade}
+                            size="small"
+                            color={gradeColor(nearbyRoute.grade)}
+                            variant="outlined"
+                          />
+                        )}
+                        {nearbyRoute.done && (
+                          <Tooltip title="Done">
+                            <CheckCircleIcon color="success" fontSize="small" />
+                          </Tooltip>
+                        )}
+                      </Stack>
+                    </Stack>
+                  </Card>
+                ))}
+              </Stack>
+              <Box mt={1}>
+                <Link 
+                  to={`/nearest-refs/${route.nearest_reference?.id}`}
+                  style={{ 
+                    fontSize: '0.875rem',
+                    textDecoration: "none", 
+                    color: "#1976d2"
+                  }}
+                >
+                  View all routes near {route.nearest_reference?.name} →
+                </Link>
+              </Box>
             </Box>
           )}
 

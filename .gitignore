@@ -31,3 +31,7 @@ Thumbs.db
 *.log
 *.cache
 *.tmp
+
+
+climb_manager/data/*
+

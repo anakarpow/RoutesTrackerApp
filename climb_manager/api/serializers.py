@@ -23,7 +23,6 @@ class ClimberSerializer(serializers.ModelSerializer):
 
 
 class ClimbSerializer(serializers.ModelSerializer):
-    climbers = ClimberSerializer(many=True, read_only=True)
     climbers = ClimberSerializer(many=True, read_only=True, source="climber_set")
     class Meta:
         model = Climb

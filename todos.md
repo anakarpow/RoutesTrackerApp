@@ -6,4 +6,6 @@ add pages for nearest ref and area  DONE
 
 check columns comment and more infos DONE
 
-dockerize
+dockerize DONE 
+
+check docker implementation
